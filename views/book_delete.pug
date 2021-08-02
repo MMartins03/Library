@@ -2,46 +2,46 @@ extends layout
 
 block content
 
-  h1 #{title}: #{book.title}
+  h1 #{title}: #{dish.title}
   
-  p #[strong Author:] 
-    a(href=book.author.url) #{book.author.name}
-  p #[strong Summary:] #{book.summary}
-  p #[strong ISBN:] #{book.isbn}
+  p #[strong chef:] 
+    a(href=dish.chef.url) #{dish.chef.name}
+  p #[strong Summary:] #{dish.summary}
+  p #[strong ISBN:] #{dish.isbn}
   p #[strong Genre:] 
-    each val in book.genre
+    each val in dish.genre
       a(href=val.url) #{val.name}
       |, 
 
   hr
   
-  if book_instances.length
+  if dish_instances.length
   
-    p #[strong Delete the following copies before attempting to delete this Book.]
+    p #[strong Delete the following copies before attempting to delete this dish.]
   
     div(style='margin-left:20px;margin-top:20px')
 
       h4 Copies
     
-        each book_copy in book_instances
+        each dish_copy in dish_instances
           hr
-          if book_copy.status=='Available'
-            p.text-success #{book_copy.status}
-          else if book_copy.status=='Maintenance'
-            p.text-danger #{book_copy.status}
+          if dish_copy.status=='Available'
+            p.text-success #{dish_copy.status}
+          else if dish_copy.status=='Maintenance'
+            p.text-danger #{dish_copy.status}
           else
-            p.text-warning #{book_copy.status} 
-          p #[strong Imprint:] #{book_copy.imprint}
-          if book_copy.status!='Available'
-            p #[strong Due back:] #{book_copy.due_back}
+            p.text-warning #{dish_copy.status} 
+          p #[strong Imprint:] #{dish_copy.imprint}
+          if dish_copy.status!='Available'
+            p #[strong Due back:] #{dish_copy.due_back}
           p #[strong Id:] 
-            a(href=book_copy.url) #{book_copy._id}
+            a(href=dish_copy.url) #{dish_copy._id}
 
   else
-    p Do you really want to delete this Book?
+    p Do you really want to delete this dish?
     
     form(method='POST' action='')
       div.form-group
-        input#id.form-control(type='hidden',name='id', required='true', value=book._id )
+        input#id.form-control(type='hidden',name='id', required='true', value=dish._id )
 
       button.btn.btn-primary(type='submit') Delete

@@ -1,0 +1,29 @@
+extends layout
+
+block content
+
+  h1 #{title}: #{chef.name}
+  p= chef.lifespan
+  
+  if chef_dishs.length
+  
+    p #[strong Delete the following dishs before attempting to delete this chef.]
+  
+    div(style='margin-left:20px;margin-top:20px')
+
+      h4 dishs
+    
+      dl
+      each dish in chef_dishs
+        dt 
+          a(href=dish.url) #{dish.title}
+        dd #{dish.summary}
+
+  else
+    p Do you really want to delete this chef?
+    
+    form(method='POST' action='')
+      div.form-group
+        input#chefid.form-control(type='hidden',name='chefid', required='true', value=chef._id )
+
+      button.btn.btn-primary(type='submit') Delete

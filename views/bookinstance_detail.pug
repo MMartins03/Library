@@ -2,25 +2,25 @@ extends layout
 
 block content
 
-  h1 ID: #{bookinstance._id}
+  h1 ID: #{dishinstance._id}
   
   p #[strong Title:] 
-    a(href=bookinstance.book.url) #{bookinstance.book.title}
-  p #[strong Imprint:] #{bookinstance.imprint}
+    a(href=dishinstance.dish.url) #{dishinstance.dish.title}
+  p #[strong Imprint:] #{dishinstance.imprint}
 
   p #[strong Status:] 
-    if bookinstance.status=='Available'
-      span.text-success #{bookinstance.status}
-    else if bookinstance.status=='Maintenance'
-      span.text-danger #{bookinstance.status}
+    if dishinstance.status=='Available'
+      span.text-success #{dishinstance.status}
+    else if dishinstance.status=='Maintenance'
+      span.text-danger #{dishinstance.status}
     else
-      span.text-warning #{bookinstance.status} 
+      span.text-warning #{dishinstance.status} 
       
-  if bookinstance.status!='Available'
-    p #[strong Due back:] #{bookinstance.due_back_formatted}
+  if dishinstance.status!='Available'
+    p #[strong Due back:] #{dishinstance.due_back_formatted}
 
   hr
   p
-    a(href=bookinstance.url+'/delete') Delete BookInstance
+    a(href=dishinstance.url+'/delete') Delete dishInstance
   p
-    a(href=bookinstance.url+'/update') Update BookInstance
+    a(href=dishinstance.url+'/update') Update dishInstance

@@ -3,66 +3,66 @@ var router = express.Router();
 
 
 // Require our controllers.
-var book_controller = require('../controllers/bookController'); 
-var author_controller = require('../controllers/authorController');
+var dish_controller = require('../controllers/dishController'); 
+var chef_controller = require('../controllers/chefController');
 var genre_controller = require('../controllers/genreController');
-var book_instance_controller = require('../controllers/bookinstanceController');
+var dish_instance_controller = require('../controllers/dishinstanceController');
 
 
-/// BOOK ROUTES ///
+/// dish ROUTES ///
 
 // GET catalog home page.
-router.get('/', book_controller.index);  
+router.get('/', dish_controller.index);  
 
-// GET request for creating a Book. NOTE This must come before routes that display Book (uses id).
-router.get('/book/create', book_controller.book_create_get);
+// GET request for creating a dish. NOTE This must come before routes that display dish (uses id).
+router.get('/dish/create', dish_controller.dish_create_get);
 
-// POST request for creating Book.
-router.post('/book/create', book_controller.book_create_post);
+// POST request for creating dish.
+router.post('/dish/create', dish_controller.dish_create_post);
 
-// GET request to delete Book.
-router.get('/book/:id/delete', book_controller.book_delete_get);
+// GET request to delete dish.
+router.get('/dish/:id/delete', dish_controller.dish_delete_get);
 
-// POST request to delete Book.
-router.post('/book/:id/delete', book_controller.book_delete_post);
+// POST request to delete dish.
+router.post('/dish/:id/delete', dish_controller.dish_delete_post);
 
-// GET request to update Book.
-router.get('/book/:id/update', book_controller.book_update_get);
+// GET request to update dish.
+router.get('/dish/:id/update', dish_controller.dish_update_get);
 
-// POST request to update Book.
-router.post('/book/:id/update', book_controller.book_update_post);
+// POST request to update dish.
+router.post('/dish/:id/update', dish_controller.dish_update_post);
 
-// GET request for one Book.
-router.get('/book/:id', book_controller.book_detail);
+// GET request for one dish.
+router.get('/dish/:id', dish_controller.dish_detail);
 
-// GET request for list of all Book.
-router.get('/books', book_controller.book_list);
+// GET request for list of all dish.
+router.get('/dishs', dish_controller.dish_list);
 
-/// AUTHOR ROUTES ///
+/// chef ROUTES ///
 
-// GET request for creating Author. NOTE This must come before route for id (i.e. display author).
-router.get('/author/create', author_controller.author_create_get);
+// GET request for creating chef. NOTE This must come before route for id (i.e. display chef).
+router.get('/chef/create', chef_controller.chef_create_get);
 
-// POST request for creating Author.
-router.post('/author/create', author_controller.author_create_post);
+// POST request for creating chef.
+router.post('/chef/create', chef_controller.chef_create_post);
 
-// GET request to delete Author.
-router.get('/author/:id/delete', author_controller.author_delete_get);
+// GET request to delete chef.
+router.get('/chef/:id/delete', chef_controller.chef_delete_get);
 
-// POST request to delete Author
-router.post('/author/:id/delete', author_controller.author_delete_post);
+// POST request to delete chef
+router.post('/chef/:id/delete', chef_controller.chef_delete_post);
 
-// GET request to update Author.
-router.get('/author/:id/update', author_controller.author_update_get);
+// GET request to update chef.
+router.get('/chef/:id/update', chef_controller.chef_update_get);
 
-// POST request to update Author.
-router.post('/author/:id/update', author_controller.author_update_post);
+// POST request to update chef.
+router.post('/chef/:id/update', chef_controller.chef_update_post);
 
-// GET request for one Author.
-router.get('/author/:id', author_controller.author_detail);
+// GET request for one chef.
+router.get('/chef/:id', chef_controller.chef_detail);
 
-// GET request for list of all Authors.
-router.get('/authors', author_controller.author_list);
+// GET request for list of all chefs.
+router.get('/chefs', chef_controller.chef_list);
 
 
 /// GENRE ROUTES ///
@@ -92,31 +92,31 @@ router.get('/genre/:id', genre_controller.genre_detail);
 router.get('/genres', genre_controller.genre_list);
 
 
-/// BOOKINSTANCE ROUTES ///
+/// dishINSTANCE ROUTES ///
 
-// GET request for creating a BookInstance. NOTE This must come before route that displays BookInstance (uses id).
-router.get('/bookinstance/create', book_instance_controller.bookinstance_create_get);
+// GET request for creating a dishInstance. NOTE This must come before route that displays dishInstance (uses id).
+router.get('/dishinstance/create', dish_instance_controller.dishinstance_create_get);
 
-// POST request for creating BookInstance.
-router.post('/bookinstance/create', book_instance_controller.bookinstance_create_post);
+// POST request for creating dishInstance.
+router.post('/dishinstance/create', dish_instance_controller.dishinstance_create_post);
 
-// GET request to delete BookInstance.
-router.get('/bookinstance/:id/delete', book_instance_controller.bookinstance_delete_get);
+// GET request to delete dishInstance.
+router.get('/dishinstance/:id/delete', dish_instance_controller.dishinstance_delete_get);
 
-// POST request to delete BookInstance.
-router.post('/bookinstance/:id/delete', book_instance_controller.bookinstance_delete_post);
+// POST request to delete dishInstance.
+router.post('/dishinstance/:id/delete', dish_instance_controller.dishinstance_delete_post);
 
-// GET request to update BookInstance.
-router.get('/bookinstance/:id/update', book_instance_controller.bookinstance_update_get);
+// GET request to update dishInstance.
+router.get('/dishinstance/:id/update', dish_instance_controller.dishinstance_update_get);
 
-// POST request to update BookInstance.
-router.post('/bookinstance/:id/update', book_instance_controller.bookinstance_update_post);
+// POST request to update dishInstance.
+router.post('/dishinstance/:id/update', dish_instance_controller.dishinstance_update_post);
 
-// GET request for one BookInstance.
-router.get('/bookinstance/:id', book_instance_controller.bookinstance_detail);
+// GET request for one dishInstance.
+router.get('/dishinstance/:id', dish_instance_controller.dishinstance_detail);
 
-// GET request for list of all BookInstance.
-router.get('/bookinstances', book_instance_controller.bookinstance_list);
+// GET request for list of all dishInstance.
+router.get('/dishinstances', dish_instance_controller.dishinstance_list);
 
 
 module.exports = router;

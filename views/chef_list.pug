@@ -1,0 +1,13 @@
+extends layout
+
+block content
+  h1= title
+  
+  ul
+  each chef in chef_list
+    li 
+      a(href=chef.url) #{chef.name} 
+      | (#{chef.lifespan})
+
+  else
+    li There are no chefs.

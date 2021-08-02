@@ -1,22 +1,22 @@
 extends layout
 
 block content
-  h1 Title: #{book.title}
+  h1 Title: #{dish.title}
   
-  p #[strong Author:] 
-    a(href=book.author.url) #{book.author.name}
-  p #[strong Summary:] #{book.summary}
-  p #[strong ISBN:] #{book.isbn}
+  p #[strong chef:] 
+    a(href=dish.chef.url) #{dish.chef.name}
+  p #[strong Summary:] #{dish.summary}
+  p #[strong ISBN:] #{dish.isbn}
   p #[strong Genre:] 
-    each val, index in book.genre
+    each val, index in dish.genre
       a(href=val.url) #{val.name}
-      if index < book.genre.length - 1
+      if index < dish.genre.length - 1
         |, 
   
   div(style='margin-left:20px;margin-top:20px')
     h4 Copies
     
-    each val in book_instances
+    each val in dish_instances
       hr
       if val.status=='Available'
         p.text-success #{val.status}
@@ -31,10 +31,10 @@ block content
         a(href=val.url) #{val._id}
  
     else
-      p There are no copies of this book in the library.
+      p There are no copies of this dish in the library.
       
   hr
   p
-    a(href=book.url+'/delete') Delete Book
+    a(href=dish.url+'/delete') Delete dish
   p
-    a(href=book.url+'/update') Update Book
+    a(href=dish.url+'/update') Update dish

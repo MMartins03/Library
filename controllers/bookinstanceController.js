@@ -1,57 +1,57 @@
-var BookInstance = require('../models/bookinstance')
-var Book = require('../models/book')
+var dishInstance = require('../models/dishinstance')
+var dish = require('../models/dish')
 var async = require('async')
 
 const { body,validationResult } = require("express-validator");
 
-// Display list of all BookInstances.
-exports.bookinstance_list = function(req, res, next) {
+// Display list of all dishInstances.
+exports.dishinstance_list = function(req, res, next) {
 
-  BookInstance.find()
-    .populate('book')
-    .exec(function (err, list_bookinstances) {
+  dishInstance.find()
+    .populate('dish')
+    .exec(function (err, list_dishinstances) {
       if (err) { return next(err); }
       // Successful, so render.
-      res.render('bookinstance_list', { title: 'Book Instance List', bookinstance_list:  list_bookinstances});
+      res.render('dishinstance_list', { title: 'dish Instance List', dishinstance_list:  list_dishinstances});
     })
 
 };
 
-// Display detail page for a specific BookInstance.
-exports.bookinstance_detail = function(req, res, next) {
+// Display detail page for a specific dishInstance.
+exports.dishinstance_detail = function(req, res, next) {
 
-    BookInstance.findById(req.params.id)
-    .populate('book')
-    .exec(function (err, bookinstance) {
+    dishInstance.findById(req.params.id)
+    .populate('dish')
+    .exec(function (err, dishinstance) {
       if (err) { return next(err); }
-      if (bookinstance==null) { // No results.
-          var err = new Error('Book copy not found');
+      if (dishinstance==null) { // No results.
+          var err = new Error('dish copy not found');
           err.status = 404;
           return next(err);
         }
       // Successful, so render.
-      res.render('bookinstance_detail', { title: 'Book:', bookinstance:  bookinstance});
+      res.render('dishinstance_detail', { title: 'dish:', dishinstance:  dishinstance});
     })
 
 };
 
-// Display BookInstance create form on GET.
-exports.bookinstance_create_get = function(req, res, next) {
+// Display dishInstance create form on GET.
+exports.dishinstance_create_get = function(req, res, next) {
 
-     Book.find({},'title')
-    .exec(function (err, books) {
+     dish.find({},'title')
+    .exec(function (err, dishs) {
       if (err) { return next(err); }
       // Successful, so render.
-      res.render('bookinstance_form', {title: 'Create BookInstance', book_list:books } );
+      res.render('dishinstance_form', {title: 'Create dishInstance', dish_list:dishs } );
     });
 
 };
 
-// Handle BookInstance create on POST.
-exports.bookinstance_create_post = [
+// Handle dishInstance create on POST.
+exports.dishinstance_create_post = [
 
     // Validate and sanitize fields.
-    body('book', 'Book must be specified').trim().isLength({ min: 1 }).escape(),
+    body('dish', 'dish must be specified').trim().isLength({ min: 1 }).escape(),
     body('imprint', 'Imprint must be specified').trim().isLength({ min: 1 }).escape(),
     body('status').escape(),
     body('due_back', 'Invalid date').optional({ checkFalsy: true }).isISO8601().toDate(),
@@ -63,9 +63,9 @@ exports.bookinstance_create_post = [
         // Extract the validation errors from a request.
         const errors = validationResult(req);
 
-        // Create a BookInstance object with escaped and trimmed data.
-        var bookinstance = new BookInstance(
-          { book: req.body.book,
+        // Create a dishInstance object with escaped and trimmed data.
+        var dishinstance = new dishInstance(
+          { dish: req.body.dish,
             imprint: req.body.imprint,
             status: req.body.status,
             due_back: req.body.due_back
@@ -73,20 +73,20 @@ exports.bookinstance_create_post = [
 
         if (!errors.isEmpty()) {
             // There are errors. Render form again with sanitized values and error messages.
-            Book.find({},'title')
-                .exec(function (err, books) {
+            dish.find({},'title')
+                .exec(function (err, dishs) {
                     if (err) { return next(err); }
                     // Successful, so render.
-                    res.render('bookinstance_form', { title: 'Create BookInstance', book_list : books, selected_book : bookinstance.book._id , errors: errors.array(), bookinstance:bookinstance });
+                    res.render('dishinstance_form', { title: 'Create dishInstance', dish_list : dishs, selected_dish : dishinstance.dish._id , errors: errors.array(), dishinstance:dishinstance });
             });
             return;
         }
         else {
             // Data from form is valid
-            bookinstance.save(function (err) {
+            dishinstance.save(function (err) {
                 if (err) { return next(err); }
                    // Successful - redirect to new record.
-                   res.redirect(bookinstance.url);
+                   res.redirect(dishinstance.url);
                 });
         }
     }
@@ -94,64 +94,64 @@ exports.bookinstance_create_post = [
 
 
 
-// Display BookInstance delete form on GET.
-exports.bookinstance_delete_get = function(req, res, next) {
+// Display dishInstance delete form on GET.
+exports.dishinstance_delete_get = function(req, res, next) {
 
-    BookInstance.findById(req.params.id)
-    .populate('book')
-    .exec(function (err, bookinstance) {
+    dishInstance.findById(req.params.id)
+    .populate('dish')
+    .exec(function (err, dishinstance) {
         if (err) { return next(err); }
-        if (bookinstance==null) { // No results.
-            res.redirect('/catalog/bookinstances');
+        if (dishinstance==null) { // No results.
+            res.redirect('/catalog/dishinstances');
         }
         // Successful, so render.
-        res.render('bookinstance_delete', { title: 'Delete BookInstance', bookinstance:  bookinstance});
+        res.render('dishinstance_delete', { title: 'Delete dishInstance', dishinstance:  dishinstance});
     })
 
 };
 
-// Handle BookInstance delete on POST.
-exports.bookinstance_delete_post = function(req, res, next) {
+// Handle dishInstance delete on POST.
+exports.dishinstance_delete_post = function(req, res, next) {
     
-    // Assume valid BookInstance id in field.
-    BookInstance.findByIdAndRemove(req.body.id, function deleteBookInstance(err) {
+    // Assume valid dishInstance id in field.
+    dishInstance.findByIdAndRemove(req.body.id, function deletedishInstance(err) {
         if (err) { return next(err); }
-        // Success, so redirect to list of BookInstance items.
-        res.redirect('/catalog/bookinstances');
+        // Success, so redirect to list of dishInstance items.
+        res.redirect('/catalog/dishinstances');
         });
 
 };
 
-// Display BookInstance update form on GET.
-exports.bookinstance_update_get = function(req, res, next) {
+// Display dishInstance update form on GET.
+exports.dishinstance_update_get = function(req, res, next) {
 
-    // Get book, authors and genres for form.
+    // Get dish, chefs and genres for form.
     async.parallel({
-        bookinstance: function(callback) {
-            BookInstance.findById(req.params.id).populate('book').exec(callback)
+        dishinstance: function(callback) {
+            dishInstance.findById(req.params.id).populate('dish').exec(callback)
         },
-        books: function(callback) {
-            Book.find(callback)
+        dishs: function(callback) {
+            dish.find(callback)
         },
 
         }, function(err, results) {
             if (err) { return next(err); }
-            if (results.bookinstance==null) { // No results.
-                var err = new Error('Book copy not found');
+            if (results.dishinstance==null) { // No results.
+                var err = new Error('dish copy not found');
                 err.status = 404;
                 return next(err);
             }
             // Success.
-            res.render('bookinstance_form', { title: 'Update  BookInstance', book_list : results.books, selected_book : results.bookinstance.book._id, bookinstance:results.bookinstance });
+            res.render('dishinstance_form', { title: 'Update  dishInstance', dish_list : results.dishs, selected_dish : results.dishinstance.dish._id, dishinstance:results.dishinstance });
         });
 
 };
 
-// Handle BookInstance update on POST.
-exports.bookinstance_update_post = [
+// Handle dishInstance update on POST.
+exports.dishinstance_update_post = [
 
     // Validate and sanitize fields.
-    body('book', 'Book must be specified').trim().isLength({ min: 1 }).escape(),
+    body('dish', 'dish must be specified').trim().isLength({ min: 1 }).escape(),
     body('imprint', 'Imprint must be specified').trim().isLength({ min: 1 }).escape(),
     body('status').escape(),
     body('due_back', 'Invalid date').optional({ checkFalsy: true }).isISO8601().toDate(),
@@ -163,9 +163,9 @@ exports.bookinstance_update_post = [
         // Extract the validation errors from a request.
         const errors = validationResult(req);
 
-        // Create a BookInstance object with escaped/trimmed data and current id.
-        var bookinstance = new BookInstance(
-          { book: req.body.book,
+        // Create a dishInstance object with escaped/trimmed data and current id.
+        var dishinstance = new dishInstance(
+          { dish: req.body.dish,
             imprint: req.body.imprint,
             status: req.body.status,
             due_back: req.body.due_back,
@@ -174,20 +174,20 @@ exports.bookinstance_update_post = [
 
         if (!errors.isEmpty()) {
             // There are errors so render the form again, passing sanitized values and errors.
-            Book.find({},'title')
-                .exec(function (err, books) {
+            dish.find({},'title')
+                .exec(function (err, dishs) {
                     if (err) { return next(err); }
                     // Successful, so render.
-                    res.render('bookinstance_form', { title: 'Update BookInstance', book_list : books, selected_book : bookinstance.book._id , errors: errors.array(), bookinstance:bookinstance });
+                    res.render('dishinstance_form', { title: 'Update dishInstance', dish_list : dishs, selected_dish : dishinstance.dish._id , errors: errors.array(), dishinstance:dishinstance });
             });
             return;
         }
         else {
             // Data from form is valid.
-            BookInstance.findByIdAndUpdate(req.params.id, bookinstance, {}, function (err,thebookinstance) {
+            dishInstance.findByIdAndUpdate(req.params.id, dishinstance, {}, function (err,thedishinstance) {
                 if (err) { return next(err); }
                    // Successful - redirect to detail page.
-                   res.redirect(thebookinstance.url);
+                   res.redirect(thedishinstance.url);
                 });
         }
     }

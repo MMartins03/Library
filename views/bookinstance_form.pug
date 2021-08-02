@@ -5,26 +5,26 @@ block content
 
   form(method='POST' action='')
     div.form-group
-      label(for='book') Book:
-      select#book.form-control(type='select', placeholder='Select book' name='book' required='true' )
-        - book_list.sort(function(a, b) {let textA = a.title.toUpperCase(); let textB = b.title.toUpperCase(); return (textA < textB) ? -1 : (textA > textB) ? 1 : 0;});
-        for book in book_list
-          option(value=book._id, selected=(selected_book==book._id.toString() ? 'selected' : false) ) #{book.title}
+      label(for='dish') dish:
+      select#dish.form-control(type='select', placeholder='Select dish' name='dish' required='true' )
+        - dish_list.sort(function(a, b) {let textA = a.title.toUpperCase(); let textB = b.title.toUpperCase(); return (textA < textB) ? -1 : (textA > textB) ? 1 : 0;});
+        for dish in dish_list
+          option(value=dish._id, selected=(selected_dish==dish._id.toString() ? 'selected' : false) ) #{dish.title}
         
     div.form-group
       label(for='imprint') Imprint:
-      input#imprint.form-control(type='text', placeholder='Publisher and date information' name='imprint' required='true' value=(undefined===bookinstance ? '' : bookinstance.imprint) )
+      input#imprint.form-control(type='text', placeholder='Publisher and date information' name='imprint' required='true' value=(undefined===dishinstance ? '' : dishinstance.imprint) )
     div.form-group
-      label(for='due_back') Date when book available:
-      input#due_back.form-control(type='date', name='due_back' value=(undefined===bookinstance ? '' : bookinstance.due_back_yyyy_mm_dd))
+      label(for='due_back') Date when dish available:
+      input#due_back.form-control(type='date', name='due_back' value=(undefined===dishinstance ? '' : dishinstance.due_back_yyyy_mm_dd))
             
     div.form-group
       label(for='status') Status:
       select#status.form-control(type='select', placeholder='Select status' name='status' required='true' )
-        option(value='Maintenance' selected=(undefined===bookinstance || bookinstance.status!='Maintenance' ? false:'selected')) Maintenance
-        option(value='Available' selected=(undefined===bookinstance || bookinstance.status!='Available' ? false:'selected')) Available
-        option(value='Loaned' selected=(undefined===bookinstance || bookinstance.status!='Loaned' ? false:'selected')) Loaned
-        option(value='Reserved' selected=(undefined===bookinstance || bookinstance.status!='Reserved' ? false:'selected')) Reserved
+        option(value='Maintenance' selected=(undefined===dishinstance || dishinstance.status!='Maintenance' ? false:'selected')) Maintenance
+        option(value='Available' selected=(undefined===dishinstance || dishinstance.status!='Available' ? false:'selected')) Available
+        option(value='Loaned' selected=(undefined===dishinstance || dishinstance.status!='Loaned' ? false:'selected')) Loaned
+        option(value='Reserved' selected=(undefined===dishinstance || dishinstance.status!='Reserved' ? false:'selected')) Reserved
 
     button.btn.btn-primary(type='submit') Submit
 

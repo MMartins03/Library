@@ -1,7 +1,7 @@
-var Book = require('../models/book');
-var Author = require('../models/author');
+var dish = require('../models/dish');
+var chef = require('../models/chef');
 var Genre = require('../models/genre');
-var BookInstance = require('../models/bookinstance');
+var dishInstance = require('../models/dishinstance');
 
 const { body,validationResult } = require("express-validator");
 
@@ -10,17 +10,17 @@ var async = require('async');
 exports.index = function(req, res) {
 
     async.parallel({
-        book_count: function(callback) {
-            Book.countDocuments({},callback);
+        dish_count: function(callback) {
+            dish.countDocuments({},callback);
         },
-        book_instance_count: function(callback) {
-            BookInstance.countDocuments({},callback);
+        dish_instance_count: function(callback) {
+            dishInstance.countDocuments({},callback);
         },
-        book_instance_available_count: function(callback) {
-            BookInstance.countDocuments({status:'Available'},callback);
+        dish_instance_available_count: function(callback) {
+            dishInstance.countDocuments({status:'Available'},callback);
         },
-        author_count: function(callback) {
-            Author.countDocuments({},callback);
+        chef_count: function(callback) {
+            chef.countDocuments({},callback);
         },
         genre_count: function(callback) {
             Genre.countDocuments({},callback);
@@ -31,69 +31,69 @@ exports.index = function(req, res) {
 };
 
 
-// Display list of all books.
-exports.book_list = function(req, res, next) {
+// Display list of all dishs.
+exports.dish_list = function(req, res, next) {
 
-  Book.find({}, 'title author')
-    .populate('author').exec(function (err, list_books) {
+  dish.find({}, 'title chef')
+    .populate('chef').exec(function (err, list_dishs) {
       if (err) {return next(err)} 
       else {
             // Successful, so render
-            res.render('book_list', { title: 'Book List', book_list:  list_books});
+            res.render('dish_list', { title: 'dish List', dish_list:  list_dishs});
         }
     });
 
 };
 
-// Display detail page for a specific book.
-exports.book_detail = function(req, res, next) {
+// Display detail page for a specific dish.
+exports.dish_detail = function(req, res, next) {
 
     async.parallel({
-        book: function(callback) {
+        dish: function(callback) {
 
-            Book.findById(req.params.id)
-              .populate('author')
+            dish.findById(req.params.id)
+              .populate('chef')
               .populate('genre')
               .exec(callback);
         },
-        book_instance: function(callback) {
+        dish_instance: function(callback) {
 
-          BookInstance.find({ 'book': req.params.id })
+          dishInstance.find({ 'dish': req.params.id })
           .exec(callback);
         },
     }, function(err, results) {
         if (err) { return next(err); }
-        if (results.book==null) { // No results.
-            var err = new Error('Book not found');
+        if (results.dish==null) { // No results.
+            var err = new Error('dish not found');
             err.status = 404;
             return next(err);
         }
         // Successful, so render.
-        res.render('book_detail', { title: results.book.title, book:  results.book, book_instances: results.book_instance } );
+        res.render('dish_detail', { title: results.dish.title, dish:  results.dish, dish_instances: results.dish_instance } );
     });
 
 };
 
-// Display book create form on GET.
-exports.book_create_get = function(req, res, next) {
+// Display dish create form on GET.
+exports.dish_create_get = function(req, res, next) {
 
-    // Get all authors and genres, which we can use for adding to our book.
+    // Get all chefs and genres, which we can use for adding to our dish.
     async.parallel({
-        authors: function(callback) {
-            Author.find(callback);
+        chefs: function(callback) {
+            chef.find(callback);
         },
         genres: function(callback) {
             Genre.find(callback);
         },
     }, function(err, results) {
         if (err) { return next(err); }
-        res.render('book_form', { title: 'Create Book',authors:results.authors, genres:results.genres });
+        res.render('dish_form', { title: 'Create dish',chefs:results.chefs, genres:results.genres });
     });
 
 };
 
-// Handle book create on POST.
-exports.book_create_post = [
+// Handle dish create on POST.
+exports.dish_create_post = [
     // Convert the genre to an array.
     (req, res, next) => {
         if(!(req.body.genre instanceof Array)){
@@ -107,7 +107,7 @@ exports.book_create_post = [
 
     // Validate and sanitize fields.
     body('title', 'Title must not be empty.').trim().isLength({ min: 1 }).escape(),
-    body('author', 'Author must not be empty.').trim().isLength({ min: 1 }).escape(),
+    body('chef', 'chef must not be empty.').trim().isLength({ min: 1 }).escape(),
     body('summary', 'Summary must not be empty.').trim().isLength({ min: 1 }).escape(),
     body('isbn', 'ISBN must not be empty').trim().isLength({ min: 1 }).escape(),
     body('genre.*').escape(),
@@ -118,10 +118,10 @@ exports.book_create_post = [
         // Extract the validation errors from a request.
         const errors = validationResult(req);
 
-        // Create a Book object with escaped and trimmed data.
-        var book = new Book(
+        // Create a dish object with escaped and trimmed data.
+        var dish = new dish(
           { title: req.body.title,
-            author: req.body.author,
+            chef: req.body.chef,
             summary: req.body.summary,
             isbn: req.body.isbn,
             genre: req.body.genre
@@ -130,10 +130,10 @@ exports.book_create_post = [
         if (!errors.isEmpty()) {
             // There are errors. Render form again with sanitized values/error messages.
 
-            // Get all authors and genres for form.
+            // Get all chefs and genres for form.
             async.parallel({
-                authors: function(callback) {
-                    Author.find(callback);
+                chefs: function(callback) {
+                    chef.find(callback);
                 },
                 genres: function(callback) {
                     Genre.find(callback);
@@ -143,20 +143,20 @@ exports.book_create_post = [
 
                 // Mark our selected genres as checked.
                 for (let i = 0; i < results.genres.length; i++) {
-                    if (book.genre.indexOf(results.genres[i]._id) > -1) {
+                    if (dish.genre.indexOf(results.genres[i]._id) > -1) {
                         results.genres[i].checked='true';
                     }
                 }
-                res.render('book_form', { title: 'Create Book',authors:results.authors, genres:results.genres, book: book, errors: errors.array() });
+                res.render('dish_form', { title: 'Create dish',chefs:results.chefs, genres:results.genres, dish: dish, errors: errors.array() });
             });
             return;
         }
         else {
-            // Data from form is valid. Save book.
-            book.save(function (err) {
+            // Data from form is valid. Save dish.
+            dish.save(function (err) {
                 if (err) { return next(err); }
-                   // Successful - redirect to new book record.
-                   res.redirect(book.url);
+                   // Successful - redirect to new dish record.
+                   res.redirect(dish.url);
                 });
         }
     }
@@ -164,53 +164,53 @@ exports.book_create_post = [
 
 
 
-// Display book delete form on GET.
-exports.book_delete_get = function(req, res, next) {
+// Display dish delete form on GET.
+exports.dish_delete_get = function(req, res, next) {
 
     async.parallel({
-        book: function(callback) {
-            Book.findById(req.params.id).populate('author').populate('genre').exec(callback);
+        dish: function(callback) {
+            dish.findById(req.params.id).populate('chef').populate('genre').exec(callback);
         },
-        book_bookinstances: function(callback) {
-            BookInstance.find({ 'book': req.params.id }).exec(callback);
+        dish_dishinstances: function(callback) {
+            dishInstance.find({ 'dish': req.params.id }).exec(callback);
         },
     }, function(err, results) {
         if (err) { return next(err); }
-        if (results.book==null) { // No results.
-            res.redirect('/catalog/books');
+        if (results.dish==null) { // No results.
+            res.redirect('/catalog/dishs');
         }
         // Successful, so render.
-        res.render('book_delete', { title: 'Delete Book', book: results.book, book_instances: results.book_bookinstances } );
+        res.render('dish_delete', { title: 'Delete dish', dish: results.dish, dish_instances: results.dish_dishinstances } );
     });
 
 };
 
-// Handle book delete on POST.
-exports.book_delete_post = function(req, res, next) {
+// Handle dish delete on POST.
+exports.dish_delete_post = function(req, res, next) {
 
     // Assume the post has valid id (ie no validation/sanitization).
 
     async.parallel({
-        book: function(callback) {
-            Book.findById(req.body.id).populate('author').populate('genre').exec(callback);
+        dish: function(callback) {
+            dish.findById(req.body.id).populate('chef').populate('genre').exec(callback);
         },
-        book_bookinstances: function(callback) {
-            BookInstance.find({ 'book': req.body.id }).exec(callback);
+        dish_dishinstances: function(callback) {
+            dishInstance.find({ 'dish': req.body.id }).exec(callback);
         },
     }, function(err, results) {
         if (err) { return next(err); }
         // Success
-        if (results.book_bookinstances.length > 0) {
-            // Book has book_instances. Render in same way as for GET route.
-            res.render('book_delete', { title: 'Delete Book', book: results.book, book_instances: results.book_bookinstances } );
+        if (results.dish_dishinstances.length > 0) {
+            // dish has dish_instances. Render in same way as for GET route.
+            res.render('dish_delete', { title: 'Delete dish', dish: results.dish, dish_instances: results.dish_dishinstances } );
             return;
         }
         else {
-            // Book has no BookInstance objects. Delete object and redirect to the list of books.
-            Book.findByIdAndRemove(req.body.id, function deleteBook(err) {
+            // dish has no dishInstance objects. Delete object and redirect to the list of dishs.
+            dish.findByIdAndRemove(req.body.id, function deletedish(err) {
                 if (err) { return next(err); }
-                // Success - got to books list.
-                res.redirect('/catalog/books');
+                // Success - got to dishs list.
+                res.redirect('/catalog/dishs');
             });
 
         }
@@ -218,44 +218,44 @@ exports.book_delete_post = function(req, res, next) {
 
 };
 
-// Display book update form on GET.
-exports.book_update_get = function(req, res, next) {
+// Display dish update form on GET.
+exports.dish_update_get = function(req, res, next) {
 
-    // Get book, authors and genres for form.
+    // Get dish, chefs and genres for form.
     async.parallel({
-        book: function(callback) {
-            Book.findById(req.params.id).populate('author').populate('genre').exec(callback);
+        dish: function(callback) {
+            dish.findById(req.params.id).populate('chef').populate('genre').exec(callback);
         },
-        authors: function(callback) {
-            Author.find(callback);
+        chefs: function(callback) {
+            chef.find(callback);
         },
         genres: function(callback) {
             Genre.find(callback);
         },
         }, function(err, results) {
             if (err) { return next(err); }
-            if (results.book==null) { // No results.
-                var err = new Error('Book not found');
+            if (results.dish==null) { // No results.
+                var err = new Error('dish not found');
                 err.status = 404;
                 return next(err);
             }
             // Success.
             // Mark our selected genres as checked.
             for (var all_g_iter = 0; all_g_iter < results.genres.length; all_g_iter++) {
-                for (var book_g_iter = 0; book_g_iter < results.book.genre.length; book_g_iter++) {
-                    if (results.genres[all_g_iter]._id.toString()===results.book.genre[book_g_iter]._id.toString()) {
+                for (var dish_g_iter = 0; dish_g_iter < results.dish.genre.length; dish_g_iter++) {
+                    if (results.genres[all_g_iter]._id.toString()===results.dish.genre[dish_g_iter]._id.toString()) {
                         results.genres[all_g_iter].checked='true';
                     }
                 }
             }
-            res.render('book_form', { title: 'Update Book', authors:results.authors, genres:results.genres, book: results.book });
+            res.render('dish_form', { title: 'Update dish', chefs:results.chefs, genres:results.genres, dish: results.dish });
         });
 
 };
 
 
-// Handle book update on POST.
-exports.book_update_post = [
+// Handle dish update on POST.
+exports.dish_update_post = [
 
     // Convert the genre to an array.
     (req, res, next) => {
@@ -270,7 +270,7 @@ exports.book_update_post = [
    
     // Validate and santitize fields.
     body('title', 'Title must not be empty.').trim().isLength({ min: 1 }).escape(),
-    body('author', 'Author must not be empty.').trim().isLength({ min: 1 }).escape(),
+    body('chef', 'chef must not be empty.').trim().isLength({ min: 1 }).escape(),
     body('summary', 'Summary must not be empty.').trim().isLength({ min: 1 }).escape(),
     body('isbn', 'ISBN must not be empty').trim().isLength({ min: 1 }).escape(),
     body('genre.*').escape(),
@@ -281,10 +281,10 @@ exports.book_update_post = [
         // Extract the validation errors from a request.
         const errors = validationResult(req);
 
-        // Create a Book object with escaped/trimmed data and old id.
-        var book = new Book(
+        // Create a dish object with escaped/trimmed data and old id.
+        var dish = new dish(
           { title: req.body.title,
-            author: req.body.author,
+            chef: req.body.chef,
             summary: req.body.summary,
             isbn: req.body.isbn,
             genre: (typeof req.body.genre==='undefined') ? [] : req.body.genre,
@@ -294,10 +294,10 @@ exports.book_update_post = [
         if (!errors.isEmpty()) {
             // There are errors. Render form again with sanitized values/error messages.
 
-            // Get all authors and genres for form
+            // Get all chefs and genres for form
             async.parallel({
-                authors: function(callback) {
-                    Author.find(callback);
+                chefs: function(callback) {
+                    chef.find(callback);
                 },
                 genres: function(callback) {
                     Genre.find(callback);
@@ -307,20 +307,20 @@ exports.book_update_post = [
 
                 // Mark our selected genres as checked.
                 for (let i = 0; i < results.genres.length; i++) {
-                    if (book.genre.indexOf(results.genres[i]._id) > -1) {
+                    if (dish.genre.indexOf(results.genres[i]._id) > -1) {
                         results.genres[i].checked='true';
                     }
                 }
-                res.render('book_form', { title: 'Update Book',authors:results.authors, genres:results.genres, book: book, errors: errors.array() });
+                res.render('dish_form', { title: 'Update dish',chefs:results.chefs, genres:results.genres, dish: dish, errors: errors.array() });
             });
             return;
         }
         else {
             // Data from form is valid. Update the record.
-            Book.findByIdAndUpdate(req.params.id, book, {}, function (err,thebook) {
+            dish.findByIdAndUpdate(req.params.id, dish, {}, function (err,thedish) {
                 if (err) { return next(err); }
-                   // Successful - redirect to book detail page.
-                   res.redirect(thebook.url);
+                   // Successful - redirect to dish detail page.
+                   res.redirect(thedish.url);
                 });
         }
     }

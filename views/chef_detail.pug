@@ -1,0 +1,25 @@
+extends layout
+
+block content
+
+  h1 chef: #{chef.name}
+  p #{chef.lifespan}
+  
+  div(style='margin-left:20px;margin-top:20px')
+
+    h4 dishs
+    
+    dl
+    each dish in chef_dishs
+      dt 
+        a(href=dish.url) #{dish.title}
+      dd #{dish.summary}
+
+    else
+      p This chef has no dishs.
+      
+  hr
+  p
+    a(href=chef.url+'/delete') Delete chef
+  p
+    a(href=chef.url+'/update') Update chef
